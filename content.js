@@ -1,9 +1,12 @@
+"use strict";
+
 var elements = document.getElementsByTagName("*");
 var iframes = document.getElementsByTagName("iframe");
 var inputs = document.getElementsByTagName("input");
 var firstInput = {};
 var videoElements = [];
 var tabbables = [];
+var links = [];
 var keysPressed = [];
 var keyCodes = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 73, 80, 88];
 var last = 0;
@@ -13,6 +16,7 @@ var shown = true;
 var tabs = [];
 var specialKey = 17;
 var appVersion = navigator.appVersion;
+var selectedLink = {};
 
 elements = Array.prototype.slice.call(elements);
 iframes = Array.prototype.slice.call(iframes);
@@ -44,9 +48,13 @@ iframes.forEach(function(iframe) {
     }
 });
 
+var searchBox = document.createElement("input");
+searchBox.style.cssText = "display:none;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:10px;";
+searchBox.className = "extension-search";
+document.body.appendChild(searchBox);
+
 
 document.body.addEventListener('keydown', function(e) {
-    "use strict";
     if (e.keyCode == specialKey && (appVersion.indexOf("Linux") != -1 || appVersion.indexOf("Win") != -1)) {
         e.preventDefault();
         e.altKey = false;
@@ -57,7 +65,6 @@ document.body.addEventListener('keydown', function(e) {
 });
 
 document.body.addEventListener('keyup', function(e) {
-    "use strict";
     var tabUrl;
     if (e.keyCode == specialKey && keysPressed.length == 2) {
         keysPressed.splice(keysPressed.indexOf(specialKey), 1);
@@ -69,6 +76,8 @@ document.body.addEventListener('keyup', function(e) {
             playVideo();
         } else if (keysPressed[0] == 73) {
             focusInput();
+        } else if (keysPressed[0] == 83) {
+            openSearch();
         } else {
             tabbables[keyCodes.indexOf(keysPressed[0])].click();
         }
@@ -100,7 +109,6 @@ document.body.addEventListener('keyup', function(e) {
 });
 
 function clearTabbables() {
-    "use strict";
     tabbables.forEach(function(el) {
         var tabElement = el.getElementsByClassName('exposed-tab');
         tabElement[0].parentNode.removeChild(tabElement[0]);
@@ -111,7 +119,6 @@ function clearTabbables() {
 }
 
 function chooseGetMethod() {
-    "use strict";
     if (url === "www.google.com") {
         setTimeout(function() { googleGetElements(); }, 200);
     } else {
@@ -120,11 +127,15 @@ function chooseGetMethod() {
 }
 
 function getElements() {
-    "use strict";
     for (var i=0; i < elements.length; i++) {
         if (elements[i].tagName === 'A' && elements[i].href.length > 0 && tabbables.length < 9) {
             if (isVisible(elements[i])) {
                 exposeTabIndex(elements[i], i);
+            }
+        }
+        if (elements[i].tagName === 'A' && elements[i].href.length > 0) {
+            if (isVisible(elements[i])) {
+                links.push(elements[i]);
             }
         }
     }
@@ -132,7 +143,6 @@ function getElements() {
 }
 
 function exposeTabIndex(element, index) {
-    "use strict";
     tabbables.push(element);
     var newIndex = document.createElement("span");
     newIndex.innerText = tabbables.length;
@@ -154,7 +164,6 @@ function exposeTabIndex(element, index) {
 }
 
 function googleGetElements() {
-    "use strict";
     var results = document.getElementsByClassName('r');
     var count = 0;
     results = Array.prototype.slice.call(results);
@@ -173,7 +182,6 @@ function googleGetElements() {
 }
 
 function isVisible(el) {
-    "use strict";
     if (el.offsetParent === null) {
         return false;
     } else {
@@ -182,7 +190,6 @@ function isVisible(el) {
 }
 
 function toggleTabs() {
-    "use strict";
     if (shown) {
         shown = false;
         tabs.forEach(function(tab) {
@@ -197,7 +204,6 @@ function toggleTabs() {
 }
 
 function playVideo() {
-    "use strict";
     if (videoElements.length) {
         if (videoElements[0].src.indexOf("?") == -1) {
             videoElements[0].src = videoElements[0].src + "?autoplay=1";
@@ -208,28 +214,52 @@ function playVideo() {
 }
 
 function focusInput() {
-    "use strict";
     if (inputs.length) {
         firstInput.focus();
     }
 }
 
 function openInNewTab(url) {
-    "use strict";
     var win = window.open(url, '_blank');
     win.focus();
 }
 
 function getDomainFromUrl(url) {
-    "use strict";
     url = url.substring(url.indexOf("://") + 3);
     url = url.substring(0, url.indexOf("/"));
     return url;
 }
 
 function emptyArray(array) {
-    "use strict";
     while(array.length > 0) {
         array.pop();
     }
+}
+
+function openSearch() {
+    var searchText = '';
+    var upCount = 0
+    searchBox.style.cssText = "display:inline-block;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:12px;color:#FFFFFF";
+    searchBox.focus();
+    searchBox.addEventListener("keyup", function(e) {
+        if (e.keyCode == 27) {
+            searchBox.value = '';
+            searchBox.style.cssText = "display:none;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:10px;";
+        } else if (e.keyCode == 13) {
+            selectedLink.click();
+        } else {
+            searchLinks(searchBox.value.toUpperCase());
+        }
+    });
+}
+
+function searchLinks(query) {
+    var queryLength = query.length;
+    for (var i = 0; i < links.length; i++) {
+        if (links[i].innerText.substring(0, queryLength).toUpperCase() === query) {
+            selectedLink = links[i];
+            break;
+        }
+    }
+    selectedLink.style.background = '#C8C8C8';
 }
