@@ -1,6 +1,6 @@
 {
     "name": "Mouseless Browsing",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Makes browser navigation and interaction easier and possible without a mouse",
     "manifest_version": 2,
     "permissions": [

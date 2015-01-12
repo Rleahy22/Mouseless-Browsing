@@ -238,16 +238,19 @@ function emptyArray(array) {
 
 function openSearch() {
     var searchText = '';
-    var upCount = 0
+    var upCount = 0;
     searchBox.style.cssText = "display:inline-block;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:12px;color:#FFFFFF";
     searchBox.focus();
     searchBox.addEventListener("keyup", function(e) {
+        if (selectedLink.style) {
+            selectedLink.style.background = '';
+        }
         if (e.keyCode == 27) {
             searchBox.value = '';
             searchBox.style.cssText = "display:none;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:10px;";
         } else if (e.keyCode == 13) {
             selectedLink.click();
-        } else {
+        } else if (searchBox.value.length > 0) {
             searchLinks(searchBox.value.toUpperCase());
         }
     });
