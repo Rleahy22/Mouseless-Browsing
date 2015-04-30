@@ -22,7 +22,9 @@ var selectedLink = {};
 var clearTabbables = function() {
     tabbables.forEach(function(el) {
         var tabElement = el.getElementsByClassName('exposed-tab');
-        tabElement[0].parentNode.removeChild(tabElement[0]);
+        if (tabElement[0]) {
+            tabElement[0].parentNode.removeChild(tabElement[0]);
+        }
     });
     emptyArray(tabbables);
     emptyArray(tabs);
