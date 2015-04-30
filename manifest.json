@@ -1,6 +1,6 @@
 {
     "name": "Mouseless Browsing",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "Makes browser navigation and interaction easier and possible without a mouse",
     "manifest_version": 2,
     "permissions": [
@@ -13,7 +13,7 @@
     "content_scripts": [
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["content.js"]
+            "js": ["content.min.js"]
         }
     ]
 }
