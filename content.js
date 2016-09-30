@@ -1,23 +1,23 @@
 "use strict";
 
-var elements = document.getElementsByTagName("*");
-var iframes = document.getElementsByTagName("iframe");
-var inputs = document.getElementsByTagName("input");
-var firstInput = {};
-var videoElements = [];
-var tabbables = [];
-var links = [];
-var keysPressed = [];
-var keyCodes = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 73, 80, 88];
-var last = 0;
-var url = document.URL;
-var attempts = 0;
-var shown = true;
-var tabs = [];
-var specialKey = 17;
-var appVersion = navigator.appVersion;
-var selectedLink = {};
+var elements = Array.prototype.slice.call(document.getElementsByTagName("*"));
+var iframes  = Array.prototype.slice.call(document.getElementsByTagName("iframe"));
+var inputs   = Array.prototype.slice.call(document.getElementsByTagName("input"));
 
+var appVersion    = navigator.appVersion;
+var attempts      = 0;
+var firstInput    = {};
+var keyCodes      = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 73, 80, 88];
+var keysPressed   = [];
+var last          = 0;
+var links         = [];
+var selectedLink  = {};
+var shown         = true;
+var specialKey    = 17;
+var tabs          = [];
+var tabbables     = [];
+var url           = document.URL;
+var videoElements = [];
 
 var clearTabbables = function() {
     tabbables.forEach(function(el) {
@@ -26,14 +26,14 @@ var clearTabbables = function() {
             tabElement[0].parentNode.removeChild(tabElement[0]);
         }
     });
-    emptyArray(tabbables);
-    emptyArray(tabs);
+
+    tabbables = tabs = [];
     chooseGetMethod();
 };
 
 var chooseGetMethod = function() {
     if (url === "www.google.com") {
-        setTimeout(function() { googleGetElements(); }, 200);
+        setTimeout(function() { googleGetElements(); }, 100);
     } else {
         getElements();
     }
@@ -61,6 +61,7 @@ var exposeTabIndex = function(element, index) {
     newIndex.innerText = tabbables.length;
     newIndex.style.cssText = "display:inline-block;position:relative;top:-5px;right:0px;color:#708090;font-size:10px;";
     newIndex.className = "exposed-tab";
+
     if (element.children.length > 0 && url !== "www.google.com") {
         var children = Array.prototype.slice.call(element.children);
         children.some(function(child) {
@@ -72,22 +73,25 @@ var exposeTabIndex = function(element, index) {
     } else {
         element.appendChild(newIndex);
     }
+
     tabs.push(newIndex);
     last = index;
 };
 
 var googleGetElements = function() {
-    var results = document.getElementsByClassName('r');
+    var results = Array.prototype.slice.call(document.getElementsByClassName('r'));
     var count = 0;
-    results = Array.prototype.slice.call(results);
+
     if (results.length === 0 && attempts < 10) {
         attempts = attempts + 1;
         chooseGetMethod();
     }
+
     results.forEach(function(result) {
         if (count > 8) {
             return;
         }
+
         count = count + 1;
         var link = result.firstChild;
         exposeTabIndex(link, count);
@@ -95,11 +99,7 @@ var googleGetElements = function() {
 };
 
 var isVisible = function(el) {
-    if (el.offsetParent === null) {
-        return false;
-    } else {
-        return true;
-    }
+    return el.offsetParent !== null;
 };
 
 var toggleTabs = function() {
@@ -143,24 +143,20 @@ var getDomainFromUrl = function(url) {
     return url;
 };
 
-var emptyArray = function(array) {
-    while(array.length > 0) {
-        array.pop();
-    }
-};
-
 var openSearch = function() {
     var searchText = '';
     var upCount = 0;
-    searchBox.style.cssText = "display:inline-block;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:12px;color:#FFFFFF";
+    searchBox.style.cssText = "display:inline-block;";
     searchBox.focus();
     searchBox.addEventListener("keyup", function(e) {
+
         if (selectedLink.style) {
             selectedLink.style.background = '';
         }
+
         if (e.keyCode == 27) {
             searchBox.value = '';
-            searchBox.style.cssText = "display:none;position:fixed;top:0;left:0;height:20px;width:80px;background:#708090;font-size:10px;";
+            searchBox.style.cssText = "display:none;";
         } else if (e.keyCode == 13) {
             selectedLink.click();
         } else if (searchBox.value.length > 0) {
@@ -170,19 +166,15 @@ var openSearch = function() {
 };
 
 var searchLinks = function(query) {
-    var queryLength = query.length;
     for (var i = 0; i < links.length; i++) {
-        if (links[i].innerText.substring(0, queryLength).toUpperCase() === query) {
+        if (links[i].innerText.substring(0, query.length).toUpperCase() === query) {
             selectedLink = links[i];
             break;
         }
     }
+
     selectedLink.style.background = '#C8C8C8';
 };
-
-elements = Array.prototype.slice.call(elements);
-iframes = Array.prototype.slice.call(iframes);
-inputs = Array.prototype.slice.call(inputs);
 
 url = getDomainFromUrl(url);
 
@@ -203,8 +195,7 @@ for (var i = 0; i < inputs.length; i++) {
 firstInput = inputs[0];
 
 iframes.forEach(function(iframe) {
-    var src = iframe.src;
-    src = getDomainFromUrl(src);
+    var src = getDomainFromUrl(iframe.src);
     if (src === "www.youtube.com") {
         videoElements.push(iframe);
     }
@@ -266,5 +257,5 @@ document.body.addEventListener('keyup', function(e) {
         tabUrl = tabbables[keyCodes.indexOf(e.keyCode)].href;
         openInNewTab(tabUrl);
     }
-    emptyArray(keysPressed);
+    keysPressed = [];
 });
