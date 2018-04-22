@@ -1,7 +1,7 @@
-chrome.extension.onMessage.addListener(function(msg, _, sendResponse) {
+chrome.extension.onMessage.addListener((msg, _, sendResponse) => {
     if (msg.tabId < 8) {
         if (isNaN(document.title.substring(0,1))) {
-            document.title = (msg.tabId + 1) + " " + document.title + '*';
+            document.title = `${(msg.tabId + 1)} ${document.title} *`;
         } else {
             if (document.title.substring((document.title.length - 1), document.title.length) === '*') {
                 document.title = (msg.tabId + 1) + " " + document.title.substring(2, document.title.length);
@@ -14,4 +14,5 @@ chrome.extension.onMessage.addListener(function(msg, _, sendResponse) {
             document.title = document.title.substring(2);
         }
     }
+    document.title.replace(/(\*+)$/, '*');
 });

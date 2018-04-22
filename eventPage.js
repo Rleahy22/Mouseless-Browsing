@@ -1,8 +1,8 @@
-var updateTabs = function(tabId) {
-    chrome.tabs.query({currentWindow: true}, function(tabs) {
-        tabs.forEach(function(tab) {
-            chrome.tabs.executeScript(tab.id, {file: "tabTitle.js"}, function() {
-                chrome.tabs.sendMessage(tab.id, {tabId: tab.index}, function(response) {});
+function updateTabs (tabId) {
+    chrome.tabs.query({currentWindow: true}, (tabs) => {
+        tabs.forEach((tab) => {
+            chrome.tabs.executeScript(tab.id, {file: "tabTitle.js"}, function () {
+                chrome.tabs.sendMessage(tab.id, {tabId: tab.index}, function (response) {});
             });
         });
     });
@@ -20,22 +20,22 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     }
 });
 
-chrome.tabs.onMoved.addListener(function (tabId, moveInfo) {
+chrome.tabs.onMoved.addListener((tabId, moveInfo) => {
     updateTabs(tabId);
 });
 
-chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
     updateTabs(tabId);
 });
 
-chrome.tabs.onAttached.addListener(function (tabId, attachInfo) {
+chrome.tabs.onAttached.addListener((tabId, attachInfo) => {
     updateTabs(tabId);
 });
 
-chrome.tabs.onDetached.addListener(function (tabId, detachInfo) {
+chrome.tabs.onDetached.addListener((tabId, detachInfo) => {
     updateTabs(tabId);
 });
 
-chrome.windows.onFocusChanged.addListener(function (windowId) {
+chrome.windows.onFocusChanged.addListener((windowId) => {
     updateTabs(tabId);
 });
