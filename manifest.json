@@ -1,10 +1,10 @@
 {
     "name": "Mouseless Browsing",
-    "version": "0.3.5",
+    "version": "1.0.0",
     "description": "Makes browser navigation and interaction easier and possible without a mouse",
     "manifest_version": 2,
     "permissions": [
-          "tabs", "http://*/*", "https://*/*"
+        "tabs", "http://*/*", "https://*/*"
     ],
     "background": {
         "scripts": ["eventPage.js"],

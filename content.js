@@ -70,7 +70,7 @@
             let children = Array.prototype.slice.call(element.children);
 
             children.some((child) => {
-                if (child.innerText.length > 0) {
+                if (child.innerText && child.innerText.length > 0) {
                     child.appendChild(newIndex);
 
                     return true;
